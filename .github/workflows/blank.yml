@@ -1,36 +1,31 @@
-# This is a basic workflow to help you get started with Actions
-
-name: CI
-
-# Controls when the workflow will run
+name: CI/CD Blue-Green
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  ci:
+    name: Integración continua
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - name: Descargar código #Descarga el contenido del repositorio.
+        uses: actions/checkout@v4 #checkout@v4: Acción oficial de GitHub para descargar el código fuente del repositorio en el que se ejecuta el flujo de trabajo.
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - name: Configurar Python #Configura la versión de Python que se utilizará en el flujo de trabajo.
+        uses: actions/setup-python@v5 #checkout@v5: Acción oficial de GitHub para configurar un entorno de Python en el flujo de trabajo.
+        with:
+          python-version: "3.12"
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Validar sintaxis de Python #Valida la sintaxis del archivo app.py utilizando el módulo py_compile de Python.
+        run: python -m py_compile app.py #py_compile verifica la sintaxis del archivo app.py y genera un archivo .pyc si la sintaxis es correcta.
+
+      - name: Ejecutar prueba básica #Ejecuta una prueba básica para asegurar que el código funcione correctamente.got 
+        run: | #pipe alt + 124
+          python -c "from app import crear_servidor; print('Código válido')" 
+
+      #python -c: Le dice a la terminal que ejecute directamente el código que esta dentro de las comillas.
+      #from app import crear_servidor: Importa la función crear_servidor del archivo app.py.
+      #print('Código válido'): Imprime el mensaje "Código válido" en la terminal 
